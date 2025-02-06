@@ -19,12 +19,24 @@ public class Card : MonoBehaviour
     public TextMeshProUGUI defenseText;
     //public TextMeshProUGUI costText;
     public TextMeshProUGUI damageText;
+    public int ID;
+
+    [SerializeField]private GameManager gm;
     //public Image spriteImage;
         
 
     // Start is called before the first frame update
     void Start()
     {
+
+        gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        data = gm.player_hand[ID-1];
         card_name = data.card_name;
         description = data.description;
         defense = data.defense;
@@ -37,11 +49,41 @@ public class Card : MonoBehaviour
         damageText.text = damage.ToString();
         //spriteImage.sprite = sprite;
 
+        if (data == null)
+        {
+            MakeInvisible(gameObject);
+        }
+        else
+        {
+            MakeVisible(gameObject);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    void MakeInvisible(GameObject obj)
+    {
+        obj = this.gameObject;
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = false;
+        }
+    }
+
+    void MakeVisible(GameObject obj)
+    {
+        obj = this.gameObject;
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = true;
+        }
+    }
+
+    void OnMouseDown()
     {
         
+        gm.player_hand[ID-1] = null;
+        data = null;
+        print("Card played");
     }
 }
