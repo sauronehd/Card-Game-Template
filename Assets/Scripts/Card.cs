@@ -1,8 +1,10 @@
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Card : MonoBehaviour
 {
@@ -21,7 +23,7 @@ public class Card : MonoBehaviour
     public TextMeshProUGUI damageText;
     public int ID;
 
-    [SerializeField]private GameManager gm;
+    [SerializeField]public GameManager gm;
     //public Image spriteImage;
         
 
@@ -79,11 +81,103 @@ public class Card : MonoBehaviour
         }
     }
 
-    void OnMouseDown()
+        void OnGUI()
     {
-        
-        gm.player_hand[ID-1] = null;
-        data = null;
-        print("Card played");
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        Rect buttonRect = new Rect(screenPos.x - 50, Screen.height - screenPos.y - 25, 100, 50);
+
+        if (GUI.Button(buttonRect, "Click Me"))
+        {
+            Debug.Log("GameObject"+ID+" clicked!");
+            
+            gm.player_hand[ID - 1] = null;
+            data = null;
+            print("Card played");
+            
+        }
     }
+
+
+    
+
+    
+}
+*/
+
+
+//experimental
+using UnityEngine;
+using UnityEngine.EventSystems;
+using TMPro;
+
+public class Card : MonoBehaviour
+{
+    public Card_data data;
+    public GameManager gm;
+    public int ID;
+    public string card_name;
+    public string description;
+    public int defense;
+    public int damage;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI descriptionText;
+    public TextMeshProUGUI defenseText;
+    public TextMeshProUGUI damageText;
+
+    void Start()
+    {
+        gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+    }
+
+    void Update()
+    {
+        data = gm.player_hand[ID - 1];
+        if (data != null)
+        {
+            card_name = data.card_name;
+            description = data.description;
+            defense = data.defense;
+            damage = data.damage;
+            nameText.text = card_name;
+            descriptionText.text = description;
+            defenseText.text = defense.ToString();
+            damageText.text = damage.ToString();
+            MakeVisible(gameObject);
+        }
+        else
+        {
+            MakeInvisible(gameObject);
+        }
+    }
+
+    void MakeInvisible(GameObject obj)
+    {
+        obj = this.gameObject;
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = false;
+        }
+    }
+
+    void MakeVisible(GameObject obj)
+    {
+        obj = this.gameObject;
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = true;
+        }
+    }
+
+    public void playCard(Card parent)
+    {
+
+
+        gm.player_hand[parent.ID - 1] = null;
+        parent.data = null;
+        
+        print("Card played:"+ parent.ID);
+    }
+
 }

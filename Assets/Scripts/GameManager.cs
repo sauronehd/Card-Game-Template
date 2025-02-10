@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -50,6 +51,9 @@ public class GameManager : MonoBehaviour
         {
             Reload(1);
         }
+
+        
+
     }
 
     void Reload(int player)
