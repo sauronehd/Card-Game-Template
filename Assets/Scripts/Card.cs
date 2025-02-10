@@ -109,6 +109,7 @@ public class Card : MonoBehaviour
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEditor;
 
 public class Card : MonoBehaviour
 {
@@ -147,6 +148,7 @@ public class Card : MonoBehaviour
         else
         {
             MakeInvisible(gameObject);
+            print("im invisible");
         }
     }
 
@@ -158,6 +160,12 @@ public class Card : MonoBehaviour
         {
             renderer.enabled = false;
         }
+        else
+        {
+            print("Renderer not found");
+        }
+
+        //Idea - simply zap the card very far away
     }
 
     void MakeVisible(GameObject obj)
@@ -168,6 +176,8 @@ public class Card : MonoBehaviour
         {
             renderer.enabled = true;
         }
+
+        //Save og coords then return from abyss here
     }
 
     public void playCard(Card parent)
