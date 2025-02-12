@@ -190,7 +190,6 @@ public class GameManager : MonoBehaviour
                 {
                     AI_card_search(stun_card);
                 }
-
                 else if (powerFists > 1)
                 {
                     AI_card_search(power_fist_card);        
@@ -251,6 +250,12 @@ public class GameManager : MonoBehaviour
                 turn = 2;
                 priority = 2;
                 Reload(2);
+            }
+            if(turn == 2 && priority==1)
+            {
+                turn = 2;
+                priority = 2;
+  
             }
         }
 
