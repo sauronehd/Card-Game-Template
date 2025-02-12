@@ -100,10 +100,15 @@ public class GameManager : MonoBehaviour
                     AI_card_search(pressure_point_card);
                 }
                 AI_damage_taken();
+                if(player_damage_dealt()>0)
+                {
+
+                    player_score+=3;
+                }
                 clear_combat_chain();
                 turn = 2;
                 priority = 2;
-            }
+            }           
             else if (player_card_deployed == stun_card)
             {
                 AI_card_search(punch_card);
