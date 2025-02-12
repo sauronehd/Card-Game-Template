@@ -429,6 +429,7 @@ public class GameManager : MonoBehaviour
         ai_card_deployed = null;
     }
 
+
 }
 
 
