@@ -21,8 +21,12 @@ public class GameManager : MonoBehaviour
     public Card_data power_fist_card;
     public Card_data pressure_point_card;
     public Card_data stun_card;
-    
-    
+    private int player_score;
+    private int ai_score;
+    private int turn=1;
+    public int priority=1;
+    public Card_data player_card_deployed;
+    public Card_data ai_card_deployed;
     private void Awake()
     {
         if (gm != null && gm != this)
@@ -47,11 +51,206 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(turn == 1)
         {
-            Reload(1);
+            if (player_card_deployed == null)
+            {
+                
+            }
+            else if (player_card_deployed==punch_card)
+            {
+                AI_damage_taken();
+                clear_combat_chain();
+                priority=1;
+            }
+            else if (player_card_deployed == power_fist_card)
+            {
+                AI_card_search(power_fist_card);
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(punch_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(stun_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(pressure_point_card);
+                }
+                AI_damage_taken();
+                clear_combat_chain();
+                turn = 2;
+                priority = 2;
+                
+            }
+            else if (player_card_deployed == pressure_point_card)
+            {
+                AI_card_search(punch_card);
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(power_fist_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(stun_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(pressure_point_card);
+                }
+                AI_damage_taken();
+                clear_combat_chain();
+                turn = 2;
+                priority = 2;
+            }
+            else if (player_card_deployed == stun_card)
+            {
+                AI_card_search(punch_card);
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(pressure_point_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(stun_card);
+                }
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(power_fist_card);
+                }
+                AI_damage_taken();
+
+                if(player_damage_dealt()>0)
+                {
+                    foreach(Card_data card in player_hand)
+                    {
+                        int i = -1;
+                        if(card == null)
+                        {
+                            i++;
+                            int selection = Random.Range(0, player_deck.Count);
+                            Card_data dealt = player_deck[selection];
+                            player_deck.RemoveAt(selection);
+                            player_hand[i] = dealt;
+                            break;
+                        }
+                    break;
+                    }
+                }
+                
+                clear_combat_chain();
+                priority = 1;
+            }
+        }
+        if(turn == 2)
+        {
+            if(ai_card_deployed!=null && priority==1)
+            {
+                
+            }
+            else if(ai_card_deployed ==null&&priority==2)
+            {
+                int punches = 0;
+                int powerFists = 0;
+                int pressurePoints = 0;
+                int stuns = 0;
+                int i = -1;
+                foreach(Card_data card in ai_hand)
+                {
+                    i++;
+                    if(card == punch_card)
+                    {
+                        punches++;
+                    }
+                    else if(card == power_fist_card)
+                    {
+                        powerFists++;
+                    }
+                    else if(card == pressure_point_card)
+                    {
+                        pressurePoints++;
+                    }
+                    else if(card == stun_card)
+                    {
+                        stuns++;
+                    }
+                }
+
+                if (punches > 2)
+                {
+                    AI_card_search(punch_card);
+                }
+                else if (stuns > 0)
+                {
+                    AI_card_search(stun_card);
+                }
+
+                else if (powerFists > 1)
+                {
+                    AI_card_search(power_fist_card);        
+                }
+                else if (pressurePoints > 0)
+                {
+                    AI_card_search(pressure_point_card);
+                }
+            }
+            else if(ai_card_deployed!=null&&priority==2)
+            {
+                player_damage_taken();
+                if(ai_damage_dealt()>0)
+                {
+                    if(ai_card_deployed == pressure_point_card)
+                    {
+                        ai_score+=3;
+                    }
+                    else if(ai_card_deployed == stun_card)
+                    {
+                        int i = -1;
+                        foreach(Card_data card in ai_hand)
+                        {
+                            i++;
+                            if(card == null)
+                            {
+                                
+                                int selection = Random.Range(0, ai_deck.Count);
+                                Card_data dealt = ai_deck[selection];
+                                ai_deck.RemoveAt(selection);
+                                ai_hand[i] = dealt;
+                                break;
+                            }
+                        break;
+                        }
+                    }
+
+                }
+                if(ai_card_deployed.goAgain)
+                {
+                    priority = 2;
+                }
+                else
+                {
+                    turn = 1;
+                    priority = 1;
+                    Reload(1);
+                }
+                clear_combat_chain();
+
+
+            }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(turn == 1 && priority==1)
+            {
+                turn = 2;
+                priority = 2;
+                Reload(2);
+            }
         }
 
+    }
+        
         
 
     }
@@ -191,14 +390,51 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void AI_Turn()
+    void AI_card_search(Card_data card)
     {
-
+        int i = -1;
+        foreach(Card_data cards in ai_hand)
+        {
+            i++;
+            if(cards == card)
+            {
+                ai_hand[i] = null;
+                priority = 1;
+                ai_card_deployed = card;
+                break;
+            }               
+        }
     }
 
-    
+    void AI_damage_taken()
+    {
+        player_score+=player_card_deployed.damage - ai_card_deployed.defense;
+    }
+    void player_damage_taken()
+    {
+        ai_score+=ai_card_deployed.damage - player_card_deployed.defense;
+    }
 
+    int player_damage_dealt()
+    {
+        return player_card_deployed.damage - ai_card_deployed.defense;
+    }
+    int ai_damage_dealt()
+    {
+        return ai_card_deployed.damage - player_card_deployed.defense;
+    }
+    void clear_combat_chain()
+    {
+        player_card_deployed = null;
+        ai_card_deployed = null;
+    }
 
-
-    
 }
+
+
+    
+
+
+
+    
+

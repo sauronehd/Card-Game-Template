@@ -124,10 +124,12 @@ public class Card : MonoBehaviour
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI defenseText;
     public TextMeshProUGUI damageText;
+    private Vector3 og_pos;
 
     void Start()
     {
         gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        og_pos = transform.position;
     }
 
     void Update()
@@ -154,40 +156,28 @@ public class Card : MonoBehaviour
 
     void MakeInvisible(GameObject obj)
     {
-        obj = this.gameObject;
-        Renderer renderer = obj.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.enabled = false;
-        }
-        else
-        {
-            print("Renderer not found");
-        }
-
+        transform.position = new Vector3(999,999,999);
+        print("there i go");
         //Idea - simply zap the card very far away
     }
 
     void MakeVisible(GameObject obj)
     {
-        obj = this.gameObject;
-        Renderer renderer = obj.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.enabled = true;
-        }
-
+        transform.position = og_pos;
+        print("im back");
         //Save og coords then return from abyss here
     }
 
     public void playCard(Card parent)
     {
 
-
-        gm.player_hand[parent.ID - 1] = null;
-        parent.data = null;
-        
-        print("Card played:"+ parent.ID);
+        if(gm.player_card_deployed==null){
+            gm.player_hand[parent.ID - 1] = null;
+            parent.data = null;
+            gm.player_card_deployed = parent.data;
+            print("Card played:"+ parent.ID);
+            gm.priority = 2;
+        }
     }
 
 }
