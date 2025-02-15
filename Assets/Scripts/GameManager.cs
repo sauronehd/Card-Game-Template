@@ -21,12 +21,15 @@ public class GameManager : MonoBehaviour
     public Card_data power_fist_card;
     public Card_data pressure_point_card;
     public Card_data stun_card;
-    private int player_score;
-    private int ai_score;
-    private int turn=1;
-    public int priority=1;
+    [SerializeField]private int player_score;
+    [SerializeField]private int ai_score;
+    [SerializeField]private int turn=1;
+    public int priority;
     public Card_data player_card_deployed;
     public Card_data ai_card_deployed;
+    public TMPro.TextMeshProUGUI player_score_text;
+    public TMPro.TextMeshProUGUI ai_score_text;
+    public TMPro.TextMeshProUGUI AIhandCount;
     private void Awake()
     {
         if (gm != null && gm != this)
@@ -51,6 +54,18 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        player_score_text.text ="Player Damge Dealt: "+ player_score.ToString();
+
+        ai_score_text.text ="AI damage dealt: "+ ai_score.ToString();
+        int nullcount = 0;
+        foreach(Card_data cards in ai_hand)
+        {
+            if(cards == null)
+            {
+                nullcount++;
+            }
+        }
+        AIhandCount.text = "AI hand count: " + (ai_hand.Length - nullcount).ToString();
         if(turn == 1)
         {
             if (player_card_deployed == null)
@@ -59,6 +74,7 @@ public class GameManager : MonoBehaviour
             }
             else if (player_card_deployed==punch_card)
             {
+                //print("punch detected");
                 AI_damage_taken();
                 clear_combat_chain();
                 priority=1;
@@ -82,6 +98,7 @@ public class GameManager : MonoBehaviour
                 clear_combat_chain();
                 turn = 2;
                 priority = 2;
+                Reload(2);
                 
             }
             else if (player_card_deployed == pressure_point_card)
@@ -108,6 +125,7 @@ public class GameManager : MonoBehaviour
                 clear_combat_chain();
                 turn = 2;
                 priority = 2;
+                Reload(2);
             }           
             else if (player_card_deployed == stun_card)
             {
@@ -191,12 +209,18 @@ public class GameManager : MonoBehaviour
                     AI_card_search(stun_card);
                 }
                 else if (powerFists > 1)
-                {
+                { 
                     AI_card_search(power_fist_card);        
                 }
                 else if (pressurePoints > 0)
                 {
                     AI_card_search(pressure_point_card);
+                }
+                else if(ai_card_deployed == null)
+                {
+                    turn = 1;
+                    priority = 1;
+                    Reload(1);
                 }
             }
             else if(ai_card_deployed!=null&&priority==2)
@@ -242,13 +266,14 @@ public class GameManager : MonoBehaviour
 
 
             }
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if(turn == 1 && priority==1)
             {
                 turn = 2;
-                priority = 2;
+                priority = 2; 
                 Reload(2);
             }
             if(turn == 2 && priority==1)
@@ -256,6 +281,23 @@ public class GameManager : MonoBehaviour
                 turn = 2;
                 priority = 2;
   
+            } 
+        }
+
+
+        if(ai_deck.Count<=0&&player_deck.Count<=0)
+        {
+            if(ai_score>player_score)
+            {
+                print("AI wins");
+            }
+            else if(player_score>ai_score)
+            {
+                print("Player wins");
+            }
+            else
+            {
+                print("Draw");
             }
         }
 
@@ -263,7 +305,7 @@ public class GameManager : MonoBehaviour
         
         
 
-    }
+    
 
     void Reload(int player)
     {
@@ -334,25 +376,25 @@ public class GameManager : MonoBehaviour
                 {
                     player_deck.Add(punch_card);
                     punch--;
-                    print("punch");
+                    //print("punch");
                 }
                 else if(selection == 2 && stun > 0)
                 {
                     player_deck.Add(stun_card);
                     stun--;
-                    print("stun");
+                   // print("stun");
                 }
                 else if(selection == 3 && powerFist > 0)
                 {
                     player_deck.Add(power_fist_card);
                     powerFist--;
-                    print("power fist");
+                    //print("power fist");
                 }
                 else if(selection == 4 && pressurePoint > 0)
                 {
                     player_deck.Add(pressure_point_card);
                     pressurePoint--;
-                    print("pressure point");
+                    //print("pressure point");
                 }
 
                 
@@ -418,20 +460,56 @@ public class GameManager : MonoBehaviour
 
     void AI_damage_taken()
     {
-        player_score+=player_card_deployed.damage - ai_card_deployed.defense;
+        if(ai_card_deployed == null)
+        {
+            player_score+=player_card_deployed.damage;
+        }
+        else
+        {
+            if(player_damage_dealt()>=0)
+            {
+                player_score+=player_card_deployed.damage - ai_card_deployed.defense;
+            }
+
+        }
+        
     }
     void player_damage_taken()
     {
-        ai_score+=ai_card_deployed.damage - player_card_deployed.defense;
+        if(player_card_deployed == null)
+        {
+            ai_score+=ai_card_deployed.damage;
+        }
+        else
+        {
+            if(ai_damage_dealt()>=0)
+            {
+                ai_score+=ai_card_deployed.damage - player_card_deployed.defense;
+            }
+        }
     }
 
     int player_damage_dealt()
     {
-        return player_card_deployed.damage - ai_card_deployed.defense;
+        if(ai_card_deployed == null)
+        {
+            return player_card_deployed.damage;
+        }
+        else
+        {
+            return player_card_deployed.damage - ai_card_deployed.defense;
+        }
     }
     int ai_damage_dealt()
     {
-        return ai_card_deployed.damage - player_card_deployed.defense;
+        if(player_card_deployed == null)
+        {
+            return ai_card_deployed.damage;
+        }
+        else
+        {
+            return ai_card_deployed.damage - player_card_deployed.defense;
+        }
     }
     void clear_combat_chain()
     {
