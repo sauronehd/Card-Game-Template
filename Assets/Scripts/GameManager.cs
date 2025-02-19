@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
@@ -290,14 +290,17 @@ public class GameManager : MonoBehaviour
             if(ai_score>player_score)
             {
                 print("AI wins");
+                SceneManager.LoadScene("AIWins");
             }
             else if(player_score>ai_score)
             {
                 print("Player wins");
+                SceneManager.LoadScene("PlayerWins");
             }
             else
             {
                 print("Draw");
+                SceneManager.LoadScene("draw");
             }
         }
 

@@ -8,4 +8,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/PlayerWins.unity
+    guid: 4bdbf5775da064cc0a08b95d7f31a778
+  - enabled: 1
+    path: Assets/Scenes/AIWins.unity
+    guid: bfa22358605604b1b80adc283302bb7b
+  - enabled: 1
+    path: Assets/Scenes/draw.unity
+    guid: d469a57df4e4b4ca1a596029d0b81c19
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
