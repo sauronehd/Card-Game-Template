@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
-
-    //when using vairibalt int player, player is one, Ai is 2
-    public static GameManager gm;
+    public TMPro.TextMeshProUGUI player_discard;
+    public TMPro.TextMeshProUGUI ai_discard;
+    //when using vairibalt int player, player is one, Ai is 2     public static GameManager gm;
     //public List<Card> deck = new List<Card>();
     public List<Card_data> player_deck = new List<Card_data>();
     public List<Card_data> ai_deck = new List<Card_data>();
@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     public int priority;
     public Card_data player_card_deployed;
     public Card_data ai_card_deployed;
+    public Card_data divine_card;
+    public Card_data full_send_card;
+    public Card_data block_card;
     public TMPro.TextMeshProUGUI player_score_text;
     public TMPro.TextMeshProUGUI ai_score_text;
     public TMPro.TextMeshProUGUI AIhandCount;
@@ -81,7 +84,11 @@ public class GameManager : MonoBehaviour
             }
             else if (player_card_deployed == power_fist_card)
             {
-                AI_card_search(power_fist_card);
+                AI_card_search(block_card);
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(power_fist_card);
+                }
                 if(ai_card_deployed==null)
                 {
                     AI_card_search(punch_card);
@@ -165,6 +172,28 @@ public class GameManager : MonoBehaviour
                 clear_combat_chain();
                 priority = 1;
             }
+            else if (player_card_deployed == divine_card)
+            {
+                AI_damage_taken();
+                DrawCards(1, 2); // Draw 2 cards for player
+                clear_combat_chain();
+                turn = 2;
+                priority = 2;
+                Reload(2);
+            }
+            else if (player_card_deployed == full_send_card)
+            {
+                AI_card_search(block_card);
+                if(ai_card_deployed==null)
+                {
+                    AI_card_search(power_fist_card);
+                }
+                AI_damage_taken();
+                clear_combat_chain();
+                turn = 2;
+                priority = 2;
+                Reload(2);
+            }
         }
         if(turn == 2)
         {
@@ -178,6 +207,8 @@ public class GameManager : MonoBehaviour
                 int powerFists = 0;
                 int pressurePoints = 0;
                 int stuns = 0;
+                int blocks = 0;
+                int divines = 0;
                 int i = -1;
                 foreach(Card_data card in ai_hand)
                 {
@@ -198,7 +229,16 @@ public class GameManager : MonoBehaviour
                     {
                         stuns++;
                     }
+                    else if(card == block_card)
+                    {
+                        blocks++;
+                    }
+                    else if(card == divine_card)
+                    {
+                        divines++;
+                    }
                 }
+
 
                 if (punches > 2)
                 {
@@ -215,6 +255,10 @@ public class GameManager : MonoBehaviour
                 else if (pressurePoints > 0)
                 {
                     AI_card_search(pressure_point_card);
+                }
+                else if (divines > 0 && ai_hand.Length - nullcount < 3)
+                {
+                    AI_card_search(divine_card);
                 }
                 else if(ai_card_deployed == null)
                 {
@@ -252,6 +296,12 @@ public class GameManager : MonoBehaviour
                     }
 
                 }
+
+                if(ai_card_deployed==divine_card)
+                {
+                    DrawCards(2, 2);
+                }
+
                 if(ai_card_deployed.goAgain)
                 {
                     priority = 2;
@@ -324,7 +374,7 @@ public class GameManager : MonoBehaviour
                 }
                 
                 
-        
+                if(card == null){
                     Card_data dealt = null;
                     while(dealt==null)
                     {
@@ -334,6 +384,7 @@ public class GameManager : MonoBehaviour
                         player_hand[i] = dealt;
                         
                     }
+                }
                 
             }
   
@@ -349,7 +400,7 @@ public class GameManager : MonoBehaviour
                     break;
                 }
                 
-                
+                if(card == null){
                     Card_data dealt = null;
                     while(dealt==null)
                     {
@@ -358,6 +409,7 @@ public class GameManager : MonoBehaviour
                         ai_deck.RemoveAt(selection);
                         ai_hand[i] = dealt;
                     }
+                }
                 
             }
         }
@@ -367,55 +419,67 @@ public class GameManager : MonoBehaviour
     {
         if(player == 1)
         {
-            int punch = 30;
-            int stun = 13;
-            int powerFist = 13;
-            int pressurePoint = 4;
+            int punch = 20;
+            int stun = 5;
+            int powerFist = 15;
+            int pressurePoint = 10;
+            int divine = 5;
+            int block = 4;
+            int fullSend = 1;
 
             while(player_deck.Count < 60)
             {
-                int selection = Random.Range(1, 5);
+                int selection = Random.Range(1, 8);
                 if(selection == 1 && punch > 0)
                 {
                     player_deck.Add(punch_card);
                     punch--;
-                    //print("punch");
                 }
                 else if(selection == 2 && stun > 0)
                 {
                     player_deck.Add(stun_card);
                     stun--;
-                   // print("stun");
                 }
                 else if(selection == 3 && powerFist > 0)
                 {
                     player_deck.Add(power_fist_card);
                     powerFist--;
-                    //print("power fist");
                 }
                 else if(selection == 4 && pressurePoint > 0)
                 {
                     player_deck.Add(pressure_point_card);
                     pressurePoint--;
-                    //print("pressure point");
                 }
-
-                
-
+                else if(selection == 5 && divine > 0)
+                {
+                    player_deck.Add(divine_card);
+                    divine--;
+                }
+                else if(selection == 6 && block > 0)
+                {
+                    player_deck.Add(block_card);
+                    block--;
+                }
+                else if(selection == 7 && fullSend > 0)
+                {
+                    player_deck.Add(full_send_card);
+                    fullSend--;
+                }
             }
-            
         }
         else
         {
-            
-            int punch = 30;
-            int stun = 13;
-            int powerFist = 13;
-            int pressurePoint = 4;
+            int punch = 20;
+            int stun = 5;
+            int powerFist = 15;
+            int pressurePoint = 10;
+            int divine = 5;
+            int block = 4;
+            int fullSend = 1;
 
             while(ai_deck.Count < 60)
             {
-                int selection = Random.Range(1, 5);
+                int selection = Random.Range(1, 8);
                 if(selection == 1 && punch > 0)
                 {
                     ai_deck.Add(punch_card);
@@ -436,12 +500,22 @@ public class GameManager : MonoBehaviour
                     ai_deck.Add(pressure_point_card);
                     pressurePoint--;
                 }
-
-                
-
+                else if(selection == 5 && divine > 0)
+                {
+                    ai_deck.Add(divine_card);
+                    divine--;
+                }
+                else if(selection == 6 && block > 0)
+                {
+                    ai_deck.Add(block_card);
+                    block--;
+                }
+                else if(selection == 7 && fullSend > 0)
+                {
+                    ai_deck.Add(full_send_card);
+                    fullSend--;
+                }
             }
-            
-
         }
     }
 
@@ -520,7 +594,40 @@ public class GameManager : MonoBehaviour
         ai_card_deployed = null;
     }
 
-
+    void DrawCards(int player, int amount)
+    {
+        for(int j = 0; j < amount; j++)
+        {
+            if(player == 1)
+            {
+                for(int i = 0; i < player_hand.Length; i++)
+                {
+                    if(player_hand[i] == null && player_deck.Count > 0)
+                    {
+                        int selection = Random.Range(0, player_deck.Count);
+                        Card_data dealt = player_deck[selection];
+                        player_deck.RemoveAt(selection);
+                        player_hand[i] = dealt;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for(int i = 0; i < ai_hand.Length; i++)
+                {
+                    if(ai_hand[i] == null && ai_deck.Count > 0)
+                    {
+                        int selection = Random.Range(0, ai_deck.Count);
+                        Card_data dealt = ai_deck[selection];
+                        ai_deck.RemoveAt(selection);
+                        ai_hand[i] = dealt;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
