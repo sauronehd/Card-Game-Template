@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI player_discard;
     public TMPro.TextMeshProUGUI ai_discard;
-    //when using vairibalt int player, player is one, Ai is 2     public static GameManager gm;
+    //when using vairibalt int player, player is one, Ai is 2     
+    public static GameManager gm;
     //public List<Card> deck = new List<Card>();
     public List<Card_data> player_deck = new List<Card_data>();
     public List<Card_data> ai_deck = new List<Card_data>();
