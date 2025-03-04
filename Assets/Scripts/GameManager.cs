@@ -36,6 +36,11 @@ public class GameManager : MonoBehaviour
     public TMPro.TextMeshProUGUI AIhandCount;
     public TMPro.TextMeshProUGUI turn_text;
     public TMPro.TextMeshProUGUI priority_text;
+    
+    // Add dictionaries to track discarded cards
+    private Dictionary<string, int> player_discards = new Dictionary<string, int>();
+    private Dictionary<string, int> ai_discards = new Dictionary<string, int>();
+    
     private void Awake()
     {
         if (gm != null && gm != this)
@@ -47,14 +52,45 @@ public class GameManager : MonoBehaviour
             gm = this;
             DontDestroyOnLoad(this.gameObject);
         }
+        
+        // Initialize discard dictionaries
+        player_discards.Clear();
+        ai_discards.Clear();
     }
     // Start is called before the first frame update
     void Start()
     {
+        // Initialize discard tracking for all card types
+        InitializeDiscardTracking();
+        
         asignDeck(1);
         asignDeck(2);
         Reload(1);
         Reload(2);
+        
+        // Initial update of discard pile text
+        UpdateDiscardText();
+    }
+
+    void InitializeDiscardTracking()
+    {
+        // Initialize player discard tracking
+        player_discards["Punch"] = 0;
+        player_discards["Power Fist"] = 0;
+        player_discards["Pressure Point"] = 0;
+        player_discards["Stun"] = 0;
+        player_discards["Divine"] = 0;
+        player_discards["Block"] = 0;
+        player_discards["Full Send"] = 0;
+        
+        // Initialize AI discard tracking
+        ai_discards["Punch"] = 0;
+        ai_discards["Power Fist"] = 0;
+        ai_discards["Pressure Point"] = 0;
+        ai_discards["Stun"] = 0;
+        ai_discards["Divine"] = 0;
+        ai_discards["Block"] = 0;
+        ai_discards["Full Send"] = 0;
     }
 
     // Update is called once per frame
@@ -358,6 +394,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // Update discard pile text each frame
+        UpdateDiscardText();
     }
         
         
@@ -594,6 +632,16 @@ public class GameManager : MonoBehaviour
     }
     void clear_combat_chain()
     {
+        if (player_card_deployed != null)
+        {
+            TrackDiscardedCard(player_card_deployed, true);
+        }
+        
+        if (ai_card_deployed != null)
+        {
+            TrackDiscardedCard(ai_card_deployed, false);
+        }
+        
         player_card_deployed = null;
         ai_card_deployed = null;
     }
@@ -631,6 +679,48 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Add this method to track when a card is played
+    void TrackDiscardedCard(Card_data card, bool isPlayer)
+    {
+        if (card == null) return;
+        
+        Dictionary<string, int> discards = isPlayer ? player_discards : ai_discards;
+        
+        if (card == punch_card) discards["Punch"]++;
+        else if (card == power_fist_card) discards["Power Fist"]++;
+        else if (card == pressure_point_card) discards["Pressure Point"]++;
+        else if (card == stun_card) discards["Stun"]++;
+        else if (card == divine_card) discards["Divine"]++;
+        else if (card == block_card) discards["Block"]++;
+        else if (card == full_send_card) discards["Full Send"]++;
+    }
+    
+    // Add this method to update the discard pile text displays
+    void UpdateDiscardText()
+    {
+        // Update player discard text
+        string playerText = "Player Discard:\n";
+        foreach (KeyValuePair<string, int> card in player_discards)
+        {
+            if (card.Value > 0)
+            {
+                playerText += card.Key + ": " + card.Value + "\n";
+            }
+        }
+        player_discard.text = playerText;
+        
+        // Update AI discard text
+        string aiText = "AI Discard:\n";
+        foreach (KeyValuePair<string, int> card in ai_discards)
+        {
+            if (card.Value > 0)
+            {
+                aiText += card.Key + ": " + card.Value + "\n";
+            }
+        }
+        ai_discard.text = aiText;
     }
 }
 
