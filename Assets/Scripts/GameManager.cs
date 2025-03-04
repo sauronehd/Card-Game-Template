@@ -34,8 +34,6 @@ public class GameManager : MonoBehaviour
     public TMPro.TextMeshProUGUI player_score_text;
     public TMPro.TextMeshProUGUI ai_score_text;
     public TMPro.TextMeshProUGUI AIhandCount;
-    public TMPro.TextMeshProUGUI turnDisplay;
-    public TMPro.TextMeshProUGUI priorityDisplay;
     private void Awake()
     {
         if (gm != null && gm != this)
@@ -63,18 +61,6 @@ public class GameManager : MonoBehaviour
         player_score_text.text ="Player Damge Dealt: "+ player_score.ToString();
 
         ai_score_text.text ="AI damage dealt: "+ ai_score.ToString();
-        
-        // Update turn and priority displays
-        if(turn == 1)
-            turnDisplay.text = "Current Turn: Player";
-        else
-            turnDisplay.text = "Current Turn: AI";
-            
-        if(priority == 1)
-            priorityDisplay.text = "Priority: Player";
-        else
-            priorityDisplay.text = "Priority: AI";
-            
         int nullcount = 0;
         foreach(Card_data cards in ai_hand)
         {
