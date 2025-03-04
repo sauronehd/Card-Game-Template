@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     public TMPro.TextMeshProUGUI player_score_text;
     public TMPro.TextMeshProUGUI ai_score_text;
     public TMPro.TextMeshProUGUI AIhandCount;
+    public TMPro.TextMeshProUGUI turn_text;
+    public TMPro.TextMeshProUGUI priority_text;
     private void Awake()
     {
         if (gm != null && gm != this)
@@ -59,7 +61,8 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         player_score_text.text ="Player Damge Dealt: "+ player_score.ToString();
-
+        turn_text.text = "Turn: " + turn.ToString();
+        priority_text.text = "Priority: " + priority.ToString();
         ai_score_text.text ="AI damage dealt: "+ ai_score.ToString();
         int nullcount = 0;
         foreach(Card_data cards in ai_hand)
@@ -630,6 +633,14 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
+
+/*
+There are 3 excess meta files in the project, they are not used in the game. Please ignore warnings:
+         turnPriorityUI
+         turnPriorityUIBootstrap
+         turnpriorityUIManager
+*/
 
 
     

@@ -1477,6 +1477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee8c48878610400591dbc552a9c8d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player_discard: {fileID: 0}
+  ai_discard: {fileID: 0}
   player_deck: []
   ai_deck: []
   player_hand:
@@ -1505,6 +1507,9 @@ MonoBehaviour:
   priority: 1
   player_card_deployed: {fileID: 0}
   ai_card_deployed: {fileID: 0}
+  divine_card: {fileID: 11400000, guid: 1c3f3e57e71834cfba82f84fce1cd0e3, type: 2}
+  full_send_card: {fileID: 0}
+  block_card: {fileID: 11400000, guid: 2c5046896afeb424783d7e49f130d4b2, type: 2}
   player_score_text: {fileID: 1932874621}
   ai_score_text: {fileID: 584513320}
   AIhandCount: {fileID: 1304858729}
